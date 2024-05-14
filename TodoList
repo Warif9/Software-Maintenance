@@ -1,0 +1,55 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class TodoList extends JFrame implements ActionListener {
+    private JTextField taskField;
+    private JTextArea taskList;
+
+    public TodoList() {
+        setTitle("Todo List");
+        setSize(400, 300);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        // Create components
+        taskField = new JTextField(20);
+        JButton addButton = new JButton("Add Task");
+        addButton.addActionListener(this);
+
+        taskList = new JTextArea();
+        taskList.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(taskList);
+
+        // Create panel
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(taskField, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(addButton, BorderLayout.SOUTH);
+
+        // Add panel to frame
+        add(panel);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String task = taskField.getText();
+
+ taskList.setText("");
+        taskList.append(task + "\n");
+        taskList.append(task + "\n");
+
+        taskField.setText("");
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                TodoList todoList = new TodoList();
+                todoList.setVisible(true);
+            }
+        });
+    }
+}
