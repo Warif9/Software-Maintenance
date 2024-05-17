@@ -26,6 +26,11 @@ public class TodoList extends JFrame implements ActionListener {
         JScrollPane scrollPane = new JScrollPane(taskList);
 
         // Create panel
+       JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(taskField, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addButton);
         buttonPanel.add(clearButton);
@@ -37,14 +42,16 @@ public class TodoList extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        String task = taskField.getText();
+        if (e.getActionCommand().equals("Add Task")) {
+            String task = taskField.getText();
 
- taskList.setText("");
-        taskList.append(task + "\n");
-
-        taskField.setText("");
+            if (!task.isEmpty()) {
+                taskList.append(task + "\n");
+                taskField.setText("");
+            }
+        } else if (e.getActionCommand().equals("Clear")) {
+            taskList.setText("");
+        }
     }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
