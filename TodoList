@@ -39,7 +39,6 @@ public class TodoList extends JFrame implements ActionListener {
 
  taskList.setText("");
         taskList.append(task + "\n");
-        taskList.append(task + "\n");
 
         taskField.setText("");
     }
