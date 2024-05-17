@@ -2,10 +2,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class TodoList extends JFrame implements ActionListener {
     private JTextField taskField;
-    private JTextArea taskList;
+    private JList<String> taskList;
+    private JButton addButton;
+    private JButton editButton;
+    private JButton clearButton;
+    private DefaultListModel<String> listModel;
+    private int selectedIndex;
 
     public TodoList() {
         setTitle("Todo List");
@@ -15,14 +22,26 @@ public class TodoList extends JFrame implements ActionListener {
 
         // Create components
         taskField = new JTextField(20);
-        JButton addButton = new JButton("Add Task");
+        addButton = new JButton("Add Task");
         addButton.addActionListener(this);
 
-        JButton clearButton = new JButton("Clear");
+        editButton = new JButton("Edit Task");
+        editButton.addActionListener(this);
+        editButton.setEnabled(false);
+
+        clearButton = new JButton("Clear");
         clearButton.addActionListener(this);
 
-        taskList = new JTextArea();
-        taskList.setEditable(false);
+        listModel = new DefaultListModel<>();
+        taskList = new JList<>(listModel);
+        taskList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        taskList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                selectedIndex = taskList.getSelectedIndex();
+                editButton.setEnabled(selectedIndex != -1);
+            }
+        });
         JScrollPane scrollPane = new JScrollPane(taskList);
 
         // Create panel
@@ -33,6 +52,7 @@ public class TodoList extends JFrame implements ActionListener {
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addButton);
+        buttonPanel.add(editButton);
         buttonPanel.add(clearButton);
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -42,15 +62,24 @@ public class TodoList extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("Add Task")) {
+        if (e.getSource() == addButton) {
             String task = taskField.getText();
 
             if (!task.isEmpty()) {
-                taskList.append(task + "\n");
+                listModel.addElement(task);
                 taskField.setText("");
             }
-        } else if (e.getActionCommand().equals("Clear")) {
-            taskList.setText("");
+        } else if (e.getSource() == editButton) {
+            String editedTask = taskField.getText();
+
+            if (!editedTask.isEmpty() && selectedIndex != -1) {
+                listModel.set(selectedIndex, editedTask);
+                taskField.setText("");
+                selectedIndex = -1;
+                editButton.setEnabled(false);
+            }
+        } else if (e.getSource() == clearButton) {
+            listModel.clear();
         }
     }
 
