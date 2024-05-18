@@ -18,10 +18,16 @@ public class TodoList extends JFrame implements ActionListener {
     private int selectedIndex;
     private JComboBox<String> categoryComboBox;
     private Map<String, DefaultListModel<String>> categoryTasks;
+    private JButton colorButton;
+    private Color backgroundColor;
+    private JPanel panel; // Declare panel as an instance variable
 
     public TodoList() {
+        initComponents();
+    }
+
+    private void initComponents() {
         setTitle("Todo List");
-        setSize(400, 300);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -55,32 +61,71 @@ public class TodoList extends JFrame implements ActionListener {
         JScrollPane scrollPane = new JScrollPane(taskList);
 
         // Create category combo box
-        String[] categories = {"Personal", "Study ", "Shopping", "Others"};
+        String[] categories = {"Personal", "Work", "Shopping", "Others"};
         categoryComboBox = new JComboBox<>(categories);
         categoryComboBox.addActionListener(this);
 
-        // Create panel
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        panel.add(taskField, BorderLayout.NORTH);
-        panel.add(scrollPane, BorderLayout.CENTER);
+        // Create color button
+        colorButton = new JButton("Choose Color");
+        colorButton.addActionListener(this);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(clearButton);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-        panel.add(categoryComboBox, BorderLayout.PAGE_START);
+        // Create panel
+        panel = new JPanel(); // Initialize the panel instance variable here
+        GroupLayout layout = new GroupLayout(panel);
+        panel.setLayout(layout);
+        layout.setAutoCreateContainerGaps(true);
+        layout.setAutoCreateGaps(true);
+
+        // Rest of the code remains the same...
+
+        layout.setHorizontalGroup(layout.createParallelGroup()
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(taskField)
+                .addComponent(addButton)
+            )
+            .addComponent(scrollPane)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(editButton)
+                .addComponent(deleteButton)
+                .addComponent(clearButton)
+            )
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(categoryComboBox)
+                .addComponent(colorButton)
+            )
+        );
+
+        layout.setVerticalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(taskField)
+                .addComponent(addButton)
+            )
+            .addComponent(scrollPane)
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(editButton)
+                .addComponent(deleteButton)
+                .addComponent(clearButton)
+            )
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(categoryComboBox)
+                .addComponent(colorButton)
+            )
+        );
 
         // Add panel to frame
-        add(panel);
+        getContentPane().add(panel);
 
         // Initialize category tasks map
         categoryTasks = new HashMap<>();
         for (String category : categories) {
             categoryTasks.put(category, new DefaultListModel<>());
         }
+
+// Set default background color
+backgroundColor = Color.WHITE;
+panel.setBackground(backgroundColor);
+
+        pack();
     }
 
     @Override
@@ -121,6 +166,7 @@ public class TodoList extends JFrame implements ActionListener {
             DefaultListModel<String> categoryModel = categoryTasks.get(category);
             categoryModel.clear();
             taskField.setText("");
+           
             selectedIndex = -1;
             editButton.setEnabled(false);
             deleteButton.setEnabled(false);
@@ -128,18 +174,19 @@ public class TodoList extends JFrame implements ActionListener {
             String category = categoryComboBox.getSelectedItem().toString();
             DefaultListModel<String> categoryModel = categoryTasks.get(category);
             taskList.setModel(categoryModel);
-            taskField.setText("");
-            selectedIndex = -1;
-            editButton.setEnabled(false);
-            deleteButton.setEnabled(false);
-        }
+    } else if (e.getSource() == colorButton) {
+    Color selectedColor = JColorChooser.showDialog(this, "Choose Background Color", backgroundColor);
+    if (selectedColor != null) {
+        backgroundColor = selectedColor;
+        panel.setBackground(backgroundColor);
+    }
+}
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                TodoList todoList = new TodoList();
-                todoList.setVisible(true);
+                new TodoList().setVisible(true);
             }
         });
     }
